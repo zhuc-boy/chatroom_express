@@ -2,6 +2,10 @@
 <html>
   <head>
     <title>Socket.IO chat</title>
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <style>
       * {
         margin: 0;
@@ -19,6 +23,8 @@
         position: fixed;
         bottom: 0;
         width: 100%;
+        display: flex;
+        justify-content: space-between;
       }
 
       form input {
@@ -29,10 +35,11 @@
       }
 
       form button {
-        width: 9%;
+        /*width: 9%;*/
         background: rgb(130, 224, 255);
         border: none;
-        padding: 10px;
+        padding: 10px 2rem;
+        white-space: nowrap;
       }
 
       #messages {
@@ -48,25 +55,53 @@
       #messages li:nth-child(odd) {
         background: #eee;
       }
+      .privatemsg {
+        display: none;
+      }
     </style>
   </head>
 
   <body>
+    <div><button id="pri">私信</button></div>
+
+    <form
+      action=""
+      style="position:relative"
+      id="privatemsg"
+      class="privatemsg"
+    >
+      <input id="mm" autocomplete="off" /><button>发送</button>
+    </form>
+
     <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+    <form action="" id="sendmsg">
+      <input id="m" autocomplete="off" /><button>发送</button>
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function() {
-        //console.log("11111");
+        /*var chat = io.connect('http://localhost/chat')
+    , news = io.connect('http://localhost/news');*/
+        //console.log("11111");//这边的/news 应该是和server的io.of('/news)是对应的
         var socket = io();
-        $("form").submit(function() {
+        socket.on("news", function(data) {
+          console.log(data);
+        });
+        $("#sendmsg").submit(function() {
           //console.log($("#m").val());
           socket.emit("chat message", $("#m").val());
+          $("#messages").append(
+            '<li style="text-align: right">' + $("#m").val() + "</li>"
+          );
           $("#m").val("");
           return false;
+        });
+        $("#pri").click(function() {
+          $("#privatemsg").toggleClass("privatemsg");
+        });
+        socket.on("server inf", function(data) {
+          $("#messages").append("<li>" + data + "</li>");
         });
       });
     </script>
